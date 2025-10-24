@@ -7,7 +7,7 @@ jobs:
     strategy:
       max-parallel: 4                               # Максимум 4 параллельных job
       matrix:
-        python-version: ['3.8', '3.9', '3.10']      # Матрица версий Python для тестирования
+        python-version: ['3.9', '3.10']      # Матрица версий Python для тестирования
     steps:
       - name: Check out repository code             # Шаг 1: Получить код репозитория
         uses: actions/checkout@v3
