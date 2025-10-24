@@ -1,0 +1,39 @@
+name: GitHub Actions Demo                           # Название workflow
+run-name: ${{ github.actor }} is testing out GitHub Actions 🚀  # Отображаемое название запуска
+on: [pull_request]                                  # Триггер - при создании/обновлении pull request
+jobs:
+  run_unittests:                                    # Название job
+    runs-on: ubuntu-latest                          # ОС для запуска
+    strategy:
+      max-parallel: 4                               # Максимум 4 параллельных job
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']      # Матрица версий Python для тестирования
+    steps:
+      - name: Check out repository code             # Шаг 1: Получить код репозитория
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}  # Шаг 2: Установить Python (версия из матрицы)
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies                  # Шаг 3: Установить зависимости
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Tests                             # Шаг 4: Запуск тестов Django
+        run: |
+          cd ./src
+          echo "SECRET_KEY = 'django-insecure-dummy-secret'" > ./proj/secrets.py
+          python3 manage.py test
+      # - name: Update passed icon                    # Шаг 5: Обновить статус в PR
+      #   uses: Sibz/github-status-action@v1
+      #   with: 
+      #     authToken: ${{secrets.GIT_TOKEN}}         # Токен для доступа к GitHub API
+      #     context: 'CI CHECK'                       # Название статус-чека
+      #     description: 'Passed'                     # Описание
+      #     state: 'success'                          # Статус - успешно
+      #     sha: ${{github.event.pull_request.head.sha || github.sha}}  # Хэш коммита
+      # - name: Check coverage                        # Шаг 6: Проверка покрытия кода тестами
+      #   run: |
+      #     python3 coverage_cicd.py                  # Запуск скрипта проверки покрытия
+      #   env:
+      #     COVERAGE_THRESHOLD: ${{vars.COVERAGE_THRESHOLD}}  # Порог покрытия из переменных репозитория

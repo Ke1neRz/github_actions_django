@@ -1,0 +1,262 @@
+venv\Scripts\activate
+cd src
+
+docker-compose build
+docker-compose up
+docker-compose run --rm backend sh -c "django-admin startproject service" .
+docker-compose run --rm backendp sh -c "python manage.py startapp clients"
+docker-compose run --rm backend sh -c "python manage.py makemigrations"
+docker-compose run --rm backend sh -c "python manage.py migrate"
+docker-compose run --rm backend sh -c "python manage.py createsuperuser"
+
+Django-comands:
+    python manage.py makemigrations
+    python manage.py migrate
+    python manage.py createsuperuser
+    python manage.py runserver
+    python manage.py test store
+    python manage.py test store.tests.test_api.BooksApiTestCase.test_
+    python manage.py test store.tests.test_serializers.BooksSerializerTestCase
+
+fixtures:
+    python -Xutf8 manage.py dumpdata goods.Categories > fixtures/goods/categories.json
+    python -Xutf8 manage.py dumpdata goods.Products > fixtures/goods/products.json
+    python manage.py loaddata fixtures/goods/categories.json
+    python manage.py loaddata fixtures/goods/products.json
+    На сервере:
+        docker-compose exec web python manage.py loaddata fixtures/*.json
+
+
+Docker comands for deploy with github:
+    docker compose up -d --build
+    docker-compose exec web ...         # для работы c миграциями и пользоватателем и т.д. именно в докере
+
+Git-Hub:
+    git init
+    git add .
+    git commit -m "first commit"
+    git branch -M main  // не нужно если при утановке git указывали main
+    git remote add origin https://github.com/your_name/name_project.git
+    git push -u origin main
+    
+    для работы вместе:
+        git pull // подтягивает все изменения с репа, если их нету то ничего
+        git push // загрузит наши изменения в реп
+
+        git checkout mybranch         // Переключится на ветку ...
+        git checkout -b mybranch      // Создать ветку ... и переключится на неё
+        git checkout -d mybranch      // Удалить ветку ...
+        git checkout b && git merge a // Смержить ветку a в b
+    
+    жёсткий pull friendbranch:
+        git reset --hard friendbranch     // Перезапишет ВСЁ содержимое ветки `mybranch` на `friendbranch`
+        git pull origin mybranch          // дабы избежать ошибок, после жёсткой скачки другой ветки
+        git push --force origin mybranch  // Жёсткая перезапись (осторожно!)
+    
+    доп:
+        git branch                        // просмтор веток
+
+        
+Создание и активация окружения:
+    python -m venv venv
+    venv\Scripts\activate
+    Выключение и удаление:
+        deactivate                   # Отключение окружения
+        rmdir /s myenv               # Удаление на Windows
+
+
+Работа с зависимостями:
+    pip install <package>        # Установка библиотеки
+    pip install -U <package>     # Обновление
+    pip uninstall <package> -y   # Удаление
+    
+    pip freeze                      # Список зависимостей
+    pip freeze > requirements.txt   # Сохраняем в файл
+    pip install -r requirements.txt # Установка из файла
+
+
+Полезные команды pip:
+    pip list                     # Список установленных библиотек
+    pip show <package>           # Инфо о библиотеке
+    pip check                    # Поиск конфликтов версий
+    pip cache purge              # Очистка кэша pip
+    pip install django pillow psycopg2 gunicorn djangorestframework
+    pip install coverage         # проверка покрытия тестов, действия: 1. coverage run --source='.' manage.py test . 2. coverage report 3. coverage html 
+    pip install django-filter    # фильтры для DRF
+    pip install social-auth-app-django # для авторизации через социалки
+    pip install django-debug-toolbar # pip install django-debug-toolbar-force дополнительно для DRF. Использовать: /?debug-toolbar
+    pip install celery_singleton
+    pip install django-cachalot # кеш
+
+
+$$$$$---SERVER---$$$$$:
+sudo apt update
+
+Git:
+    sudo apt-get install git
+
+    ls -la ~/.ssh/
+    ssh-keygen -t ed25519 -C "eled.gist122@gmail.com"
+    chmod 700 ~/.ssh
+    chmod 600 ~/.ssh/id_ed25519
+    chmod 644 ~/.ssh/id_ed25519.pub
+    cat ~/.ssh/id_ed25519.pub # Выводит ключ — СКОПИРУЙТЕ ВСЮ СТРОКУ (от ssh-ed25519 до email) и вставте в git
+    eval "$(ssh-agent -s)"
+    ssh-add ~/.ssh/id_ed25519 # должгл приветсвовать
+    ssh -T git@github.com
+    git clone git@github.com:Ke1neRz/Secret_fuel_shop.git
+
+
+Docker:
+    1:
+        # Add Docker's official GPG key:
+        sudo apt-get update
+        sudo apt-get install ca-certificates curl
+        sudo install -m 0755 -d /etc/apt/keyrings
+        sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+        # Add the repository to Apt sources:
+        echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+        $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+        sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+    2:
+        sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    3. Docker-compose:
+        # Скачиваем последнюю версию
+        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        # Делаем исполняемым
+        chmod +x /usr/local/bin/docker-compose
+
+        # Удаляем старую ссылку (если есть)
+        rm -f /usr/bin/docker-compose
+
+        # Создаём новую ссылку на правильный файл
+        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+        # Теперь обычная команда должна работать
+        docker-compose --version
+        docker-compose up -d --build   
+
+
+Создание .env:
+    ls # покажет folder
+    cd folder  # Переходим в директорию с проектом
+    touch .env      # Создаем пустой файл .env
+    nano .env       # Откройте файл для редактирования
+
+
+Команды docker для сервера:
+    docker compose up -d --build
+    docker-compose up -d
+    docker-compose down
+    docker-compose ps
+    docker-compose exec web python manage.py migrate
+    docker-compose exec web python manage.py collectstatic --noinput
+    docker-compose exec web python manage.py createsuperuser
+    # Статус всех сервисов
+        docker-compose ps
+        # Логи Django
+        docker-compose logs -f web
+        # Логи Nginx
+        docker-compose logs -f nginx
+        # Логи PostgreSQL
+        docker-compose logs -f db
+    # Просмотр зависимостей
+        docker ps
+        docker exec <ID контейнера> pip list
+
+
+Настройка ssl:
+    docker-compose stop nginx
+
+    mkdir -p /etc/nginx/ssl/
+    apt install certbot -y
+    # Получите сертификат для домена
+        certbot certonly --standalone \
+        -d ДОМЕН \
+        --email ПОЧТА \
+        --agree-tos \
+        --no-eff-email
+
+    mkdir -p nginx/ssl
+    # Скопируйте реальные сертификаты
+    cp /etc/letsencrypt/live/secret-energy-shop.ru/fullchain.pem etc/nginx/ssl/
+    cp /etc/letsencrypt/live/secret-energy-shop.ru/privkey.pem etc/nginx/ssl/
+    cp /etc/letsencrypt/live/secret-energy-shop.ru/fullchain.pem nginx/ssl/
+    cp /etc/letsencrypt/live/secret-energy-shop.ru/privkey.pem nginx/ssl/
+
+    # Установите права доступа
+    chmod 644 nginx/ssl/fullchain.pem
+    chmod 600 nginx/ssl/privkey.pem
+
+    # Проверьте файлы
+    ls -la nginx/ssl/
+
+    docker-compose start nginx
+
+
+nginx.conf на HTTP:
+    upstream django {
+        server web:8000;
+    }
+
+    # HTTP → HTTPS редирект
+    server {
+        listen 80;
+        server_name secret-energy-shop.ru 31.31.197.46 localhost;
+        return 301 https://$host$request_uri;
+    }
+
+    # HTTPS сервер (исправленные cipher'ы)
+    server {
+        listen 443 ssl;
+        server_name secret-energy-shop.ru 31.31.197.46 localhost;
+
+        # SSL сертификаты (пока заглушки)
+        ssl_certificate /etc/nginx/ssl/fullchain.pem;
+        ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+
+        # ИСПРАВЛЕННЫЕ настройки SSL
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'HIGH:!aNULL:!MD5';  # ← СОВМЕСТИМЫЕ CIPHER'Ы
+        ssl_prefer_server_ciphers on;
+        
+        # HSTS
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        
+        client_max_body_size 10M;
+
+        location / {
+            proxy_pass http://web:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        location /static/ {
+            alias /app/staticfiles/;
+            expires 30d;
+        }
+
+        location /media/ {
+            alias /app/media/;
+            expires 30d;
+        }
+    }
+
+
+$$$$$$$$$--- Команды ssh: ---$$$$$$$$$
+    pwd # /home/user
+    ls      # простой список
+    ls -la  # подробный список со скрытыми файлами
+    cd /путь/к/папке    # абсолютный путь
+    cd folder_name      # относительный путь
+    cd ..               # на уровень вверх
+    cd ~                # в домашнюю директорию
+    cd -                # вернуться в предыдущую директорию
+    cd /                # в корневую директорию
