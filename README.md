@@ -1,8 +1,7 @@
 
 ![action status](https://github.com/Ke1neRz/github_actions_django/actions/workflows/github-actions-demo.yml/badge.svg)
-![coverage status](https://gist.github.com/dvk-net/71796e1b5facbb81ddcc17b6bbc66fb9/raw/coverage.svg)
+![coverage status](https://gist.github.com/dvk-net/8979410a634945e76d916778ddbfbef1/raw/coverage.svg)
 
-[Video Demo [RU]](https://youtu.be/0vYJbLEa_fs)
 
 ![diagram](github_actions.svg)
 
