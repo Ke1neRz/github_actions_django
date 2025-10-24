@@ -24,16 +24,21 @@ jobs:
           cd ./src
           echo "SECRET_KEY = 'django-insecure-dummy-secret'" > ./proj/secrets.py
           python3 manage.py test
-      # - name: Update passed icon                    # Шаг 5: Обновить статус в PR
-      #   uses: Sibz/github-status-action@v1
-      #   with: 
-      #     authToken: ${{secrets.GIT_TOKEN}}         # Токен для доступа к GitHub API
-      #     context: 'CI CHECK'                       # Название статус-чека
-      #     description: 'Passed'                     # Описание
-      #     state: 'success'                          # Статус - успешно
-      #     sha: ${{github.event.pull_request.head.sha || github.sha}}  # Хэш коммита
-      # - name: Check coverage                        # Шаг 6: Проверка покрытия кода тестами
-      #   run: |
-      #     python3 coverage_cicd.py                  # Запуск скрипта проверки покрытия
-      #   env:
-      #     COVERAGE_THRESHOLD: ${{vars.COVERAGE_THRESHOLD}}  # Порог покрытия из переменных репозитория
+      - name: Create .env file
+        run: |
+          cd ./src
+          echo "GIT_TOKEN=${{ secrets.GIT_TOKEN }}" > .env
+          echo "SECRET_KEY=django-insecure-dummy-secret" >> .env
+      - name: Update passed icon                    # Шаг 5: Обновить статус в PR
+        uses: Sibz/github-status-action@v1
+        with: 
+          authToken: ${{secrets.GIT_TOKEN}}         # Токен для доступа к GitHub API
+          context: 'CI CHECK'                       # Название статус-чека
+          description: 'Passed'                     # Описание
+          state: 'success'                          # Статус - успешно
+          sha: ${{github.event.pull_request.head.sha || github.sha}}  # Хэш коммита
+      - name: Check coverage                        # Шаг 6: Проверка покрытия кода тестами
+        run: |
+          python3 coverage_cicd.py                  # Запуск скрипта проверки покрытия
+        env:
+          COVERAGE_THRESHOLD: ${{vars.COVERAGE_THRESHOLD}}  # Порог покрытия из переменных репозитория
