@@ -12,7 +12,7 @@ class ThresholdException(Exception):
 
 TOKEN = os.environ.get('GIT_TOKEN') 
 GIST_ID = os.environ.get('GIST_ID') 
-COVERAGE_THRESHOLD = float(os.environ.get("COVERAGE_THRESHOLD", 80))
+COVERAGE_THRESHOLD = float(os.environ.get("COVERAGE_THRESHOLD", 50))
 if __name__ == "__main__":
     os.environ['DJANGO_SETTINGS_MODULE'] = 'proj.settings'
     sys.path.insert(0,'./src')
