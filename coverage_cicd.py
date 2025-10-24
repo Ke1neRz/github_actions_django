@@ -10,8 +10,9 @@ from django.test.utils import get_runner
 class ThresholdException(Exception):
     pass
 
-TOKEN="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"
-GIST_ID="8979410a634945e76d916778ddbfbef1"
+
+TOKEN = os.environ.get('GIT_TOKEN') 
+GIST_ID = os.environ.get('GIST_ID') 
 COVERAGE_THRESHOLD = float(os.environ.get("COVERAGE_THRESHOLD", 80))
 if __name__ == "__main__":
     os.environ['DJANGO_SETTINGS_MODULE'] = 'proj.settings'
