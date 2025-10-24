@@ -4,6 +4,10 @@ on: [pull_request]                                  # Триггер - при с
 jobs:
   run_unittests:                                    # Название job
     runs-on: ubuntu-latest                          # ОС для запуска
+    permissions:
+      contents: read
+      statuses: write
+      checks: write
     strategy:
       max-parallel: 4                               # Максимум 4 параллельных job
       matrix:
@@ -24,11 +28,6 @@ jobs:
           cd ./src
           echo "SECRET_KEY = 'django-insecure-dummy-secret'" > ./proj/secrets.py
           python3 manage.py test
-      - name: Create .env file
-        run: |
-          cd ./src
-          echo "GIT_TOKEN=${{ secrets.GIT_TOKEN }}" > .env
-          echo "SECRET_KEY=django-insecure-dummy-secret" >> .env
       - name: Update passed icon                    # Шаг 5: Обновить статус в PR
         uses: Sibz/github-status-action@v1
         with: 
